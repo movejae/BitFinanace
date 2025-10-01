@@ -1,7 +1,7 @@
 # 💰 BitFinance - Real-time Cryptocurrency Asset Management Platform
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.java.net/)
+[![Java](https://img.shields.io/badge/Java-24-orange.svg)](https://openjdk.java.net/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Latest-blue.svg)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -24,7 +24,7 @@ BitFinance는 비트코인을 비롯한 다양한 암호화폐 자산의 실시�
 
 ### Backend Framework
 - **Spring Boot 3.5.7** - 최신 Spring Boot 프레임워크
-- **Java 25** - 최신 Java LTS 버전 사용
+- **Java 24** - 최신 Java LTS 버전 사용
 
 ### 핵심 기술
 | 기술 | 용도 | 설명 |
@@ -92,7 +92,7 @@ dependencies {
 
 ### 사전 요구사항
 
-- Java 25 이상
+- Java 24 이상
 - Docker & Docker Compose
 - Gradle 8.x
 - PostgreSQL (Docker 사용 시 불필요)
