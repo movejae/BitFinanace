@@ -263,9 +263,56 @@ logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+3. Commit your Changes (커밋 컨벤션을 따라주세요)
+   - **[커밋 컨벤션 가이드 보기](./COMMIT_CONVENTION.md)**
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+### Git Commit Convention
+
+이 프로젝트는 일관성 있는 커밋 히스토리 관리를 위해 Conventional Commits 규칙을 따릅니다.
+
+```bash
+# 예시
+feat(api): 비트코인 시세 조회 API 추가
+fix(websocket): 연결 끊김 오류 수정
+docs(readme): 설치 가이드 업데이트
+```
+
+자세한 커밋 규칙은 **[COMMIT_CONVENTION.md](./COMMIT_CONVENTION.md)** 문서를 참고해주세요.
+
+### Coding Standard
+
+이 프로젝트는 도메인 주도 설계(DDD)와 안전한 객체 생성 원칙을 따릅니다.
+
+**핵심 원칙:**
+- ✅ Builder 패턴으로 필수 필드 보장 (필수값 누락 시 런타임 에러 방지)
+- ✅ String 파라미터 2개 이상 시 DTO/Command 객체로 묶기
+- ✅ 재사용되는 로직만 메서드로 분리 (1회성 로직은 분리하지 않음)
+- ✅ Stream API 적극 활용 (for문 대신 선언적 코드)
+- ✅ 복잡한 람다 표현식은 메서드로 추출 (가독성 우선)
+- ✅ 도메인 로직은 엔티티에 위치
+
+```java
+// 예시: Builder로 필수 필드 보장
+Asset asset = Asset.builder()
+        .symbol("BTC")
+        .price(new BigDecimal("50000"))  // 필수!
+        .timestamp(LocalDateTime.now())
+        .build();
+
+// 예시: Stream API 활용
+List<Asset> expensive = assets.stream()
+        .filter(a -> a.getPrice().compareTo(threshold) > 0)
+        .collect(Collectors.toList());
+
+// 예시: 복잡한 람다는 메서드로
+assets.stream()
+        .filter(this::isValidAsset)  // 메서드 참조
+        .collect(Collectors.toList());
+```
+
+자세한 코딩 규칙은 **[CODING_STANDARD.md](./CODING_STANDARD.md)** 문서를 참고해주세요.
 
 ## 📄 라이선스
 
