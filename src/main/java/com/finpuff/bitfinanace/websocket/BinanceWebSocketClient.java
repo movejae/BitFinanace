@@ -1,8 +1,7 @@
 package com.finpuff.bitfinanace.websocket;
 
-import com.finpuff.bitfinanace.domain.BitcoinPrice;
 import com.finpuff.bitfinanace.dto.BinanceTradeData;
-import com.finpuff.bitfinanace.repository.BitcoinPriceRepository;
+import com.finpuff.bitfinanace.service.BitcoinPriceService;
 import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -33,7 +31,7 @@ public class BinanceWebSocketClient {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     private final Gson gson = new Gson();
-    private final BitcoinPriceRepository bitcoinPriceRepository;
+    private final BitcoinPriceService bitcoinPriceService;
     private WebSocketClient webSocketClient;
 
     @PostConstruct
@@ -51,8 +49,8 @@ public class BinanceWebSocketClient {
                         BinanceTradeData tradeData = gson.fromJson(message, BinanceTradeData.class);
                         String currentTime = LocalDateTime.now().format(TIME_FORMATTER);
 
-                        // Save to MongoDB
-                        saveToDB(tradeData);
+                        // Save to MongoDB via Service
+                        bitcoinPriceService.savePriceData(tradeData);
 
                         log.info("[{}] BTC Price: ${} | Volume: {} BTC",
                                 currentTime,
@@ -79,29 +77,6 @@ public class BinanceWebSocketClient {
 
         } catch (Exception e) {
             log.error("Failed to connect to Binance WebSocket", e);
-        }
-    }
-
-    private void saveToDB(BinanceTradeData tradeData) {
-        try {
-            BitcoinPrice bitcoinPrice = BitcoinPrice.builder()
-                    .timestamp(Instant.ofEpochMilli(tradeData.getTradeTime()))
-                    .metadata(BitcoinPrice.Metadata.builder()
-                            .symbol(tradeData.getSymbol())
-                            .eventType(tradeData.getEventType())
-                            .source("binance")
-                            .build())
-                    .price(tradeData.getPriceAsBigDecimal())
-                    .volume(tradeData.getQuantityAsBigDecimal())
-                    .eventTime(tradeData.getEventTime())
-                    .tradeTime(tradeData.getTradeTime())
-                    .build();
-
-            bitcoinPriceRepository.save(bitcoinPrice);
-            log.debug("Saved to MongoDB: {}", bitcoinPrice.getPrice());
-
-        } catch (Exception e) {
-            log.error("Failed to save to MongoDB", e);
         }
     }
 
