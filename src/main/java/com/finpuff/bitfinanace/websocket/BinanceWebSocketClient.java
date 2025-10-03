@@ -1,15 +1,20 @@
 package com.finpuff.bitfinanace.websocket;
 
+import com.finpuff.bitfinanace.domain.BitcoinPrice;
 import com.finpuff.bitfinanace.dto.BinanceTradeData;
+import com.finpuff.bitfinanace.repository.BitcoinPriceRepository;
 import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -19,18 +24,22 @@ import java.time.format.DateTimeFormatter;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class BinanceWebSocketClient {
 
-    private static final String BINANCE_WS_URL = "wss://stream.binance.com:9443/ws/btcusdt@trade";
+    @Value("${binance.websocket.url}")
+    private String binanceWsUrl;
+
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     private final Gson gson = new Gson();
+    private final BitcoinPriceRepository bitcoinPriceRepository;
     private WebSocketClient webSocketClient;
 
     @PostConstruct
     public void connect() {
         try {
-            webSocketClient = new WebSocketClient(new URI(BINANCE_WS_URL)) {
+            webSocketClient = new WebSocketClient(new URI(binanceWsUrl)) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     log.info("Connected to Binance WebSocket");
@@ -41,6 +50,9 @@ public class BinanceWebSocketClient {
                     try {
                         BinanceTradeData tradeData = gson.fromJson(message, BinanceTradeData.class);
                         String currentTime = LocalDateTime.now().format(TIME_FORMATTER);
+
+                        // Save to MongoDB
+                        saveToDB(tradeData);
 
                         log.info("[{}] BTC Price: ${} | Volume: {} BTC",
                                 currentTime,
@@ -67,6 +79,29 @@ public class BinanceWebSocketClient {
 
         } catch (Exception e) {
             log.error("Failed to connect to Binance WebSocket", e);
+        }
+    }
+
+    private void saveToDB(BinanceTradeData tradeData) {
+        try {
+            BitcoinPrice bitcoinPrice = BitcoinPrice.builder()
+                    .timestamp(Instant.ofEpochMilli(tradeData.getTradeTime()))
+                    .metadata(BitcoinPrice.Metadata.builder()
+                            .symbol(tradeData.getSymbol())
+                            .eventType(tradeData.getEventType())
+                            .source("binance")
+                            .build())
+                    .price(tradeData.getPriceAsBigDecimal())
+                    .volume(tradeData.getQuantityAsBigDecimal())
+                    .eventTime(tradeData.getEventTime())
+                    .tradeTime(tradeData.getTradeTime())
+                    .build();
+
+            bitcoinPriceRepository.save(bitcoinPrice);
+            log.debug("Saved to MongoDB: {}", bitcoinPrice.getPrice());
+
+        } catch (Exception e) {
+            log.error("Failed to save to MongoDB", e);
         }
     }
 
