@@ -24,8 +24,7 @@ public class BitcoinPriceController {
      */
     @GetMapping("/day")
     public ResponseEntity<?> getDayPrices() {
-        // TODO: Implement day price logic
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(bitcoinPriceService.getDayPrices());
     }
 
     /**
@@ -34,8 +33,7 @@ public class BitcoinPriceController {
      */
     @GetMapping("/month")
     public ResponseEntity<?> getMonthPrices() {
-        // TODO: Implement month price logic
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(bitcoinPriceService.getMonthPrices());
     }
 
     /**
@@ -44,8 +42,7 @@ public class BitcoinPriceController {
      */
     @GetMapping("/week")
     public ResponseEntity<?> getWeekPrices() {
-        // TODO: Implement week price logic
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(bitcoinPriceService.getWeekPrices());
     }
 
     /**
@@ -54,7 +51,6 @@ public class BitcoinPriceController {
      */
     @GetMapping("/latest")
     public ResponseEntity<?> getLatestPrice() {
-        // TODO: Implement latest price logic
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(bitcoinPriceService.getLatestPrice());
     }
 }

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * Bitcoin Price Service
@@ -41,5 +43,40 @@ public class BitcoinPriceService {
         } catch (Exception e) {
             log.error("Failed to save to MongoDB", e);
         }
+    }
+
+    /**
+     * Get bitcoin prices for the last day (24 hours)
+     */
+    public List<BitcoinPrice> getDayPrices() {
+        Instant now = Instant.now();
+        Instant oneDayAgo = now.minus(1, ChronoUnit.DAYS);
+        return bitcoinPriceRepository.findByTimestampBetweenOrderByTimestampAsc(oneDayAgo, now);
+    }
+
+    /**
+     * Get bitcoin prices for the last week (7 days)
+     */
+    public List<BitcoinPrice> getWeekPrices() {
+        Instant now = Instant.now();
+        Instant oneWeekAgo = now.minus(7, ChronoUnit.DAYS);
+        return bitcoinPriceRepository.findByTimestampBetweenOrderByTimestampAsc(oneWeekAgo, now);
+    }
+
+    /**
+     * Get bitcoin prices for the last month (30 days)
+     */
+    public List<BitcoinPrice> getMonthPrices() {
+        Instant now = Instant.now();
+        Instant oneMonthAgo = now.minus(30, ChronoUnit.DAYS);
+        return bitcoinPriceRepository.findByTimestampBetweenOrderByTimestampAsc(oneMonthAgo, now);
+    }
+
+    /**
+     * Get latest bitcoin price
+     */
+    public BitcoinPrice getLatestPrice() {
+        List<BitcoinPrice> prices = bitcoinPriceRepository.findLatestPrices();
+        return prices.isEmpty() ? null : prices.getFirst();
     }
 }
