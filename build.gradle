@@ -30,7 +30,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -44,6 +43,12 @@ dependencies {
 
     // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Swagger/OpenAPI (snapshot compatible version)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+
+    // Fix commons-lang3 security vulnerability
+    implementation 'org.apache.commons:commons-lang3:3.19.0'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

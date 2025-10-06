@@ -52,10 +52,7 @@ public class BinanceWebSocketClient {
                         // Save to MongoDB via Service
                         bitcoinPriceService.savePriceData(tradeData);
 
-                        log.info("[{}] BTC Price: ${} | Volume: {} BTC",
-                                currentTime,
-                                tradeData.getPrice(),
-                                tradeData.getQuantity());
+                        log.info("[{}] BTC Price: ${} | Volume: {} BTC", currentTime, tradeData.getPrice(), tradeData.getQuantity());
 
                     } catch (Exception e) {
                         log.error("Failed to parse message: {}", e.getMessage());

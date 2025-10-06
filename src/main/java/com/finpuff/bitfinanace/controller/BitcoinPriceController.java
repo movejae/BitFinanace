@@ -1,10 +1,15 @@
 package com.finpuff.bitfinanace.controller;
 
+import com.finpuff.bitfinanace.domain.BitcoinPrice;
 import com.finpuff.bitfinanace.service.BitcoinPriceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Bitcoin Price REST API Controller
@@ -14,43 +19,32 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/bitcoin/prices")
 @RequiredArgsConstructor
+@Tag(name = "Bitcoin Price", description = "비트코인 시세 조회 API")
 public class BitcoinPriceController {
 
     private final BitcoinPriceService bitcoinPriceService;
 
-    /**
-     * Get bitcoin prices for the last day
-     * GET /api/v1/bitcoin/prices/day
-     */
+    @Operation(summary = "최근 24시간 비트코인 시세 조회", description = "최근 24시간 동안의 모든 비트코인 시세 데이터를 조회합니다.")
     @GetMapping("/day")
-    public ResponseEntity<?> getDayPrices() {
+    public ResponseEntity<List<BitcoinPrice>> getDayPrices() {
         return ResponseEntity.ok(bitcoinPriceService.getDayPrices());
     }
 
-    /**
-     * Get bitcoin prices for the last month
-     * GET /api/v1/bitcoin/prices/month
-     */
+    @Operation(summary = "최근 30일 비트코인 시세 조회", description = "최근 30일 동안의 모든 비트코인 시세 데이터를 조회합니다.")
     @GetMapping("/month")
-    public ResponseEntity<?> getMonthPrices() {
+    public ResponseEntity<List<BitcoinPrice>> getMonthPrices() {
         return ResponseEntity.ok(bitcoinPriceService.getMonthPrices());
     }
 
-    /**
-     * Get bitcoin prices for the last week
-     * GET /api/v1/bitcoin/prices/week
-     */
+    @Operation(summary = "최근 7일 비트코인 시세 조회", description = "최근 7일 동안의 모든 비트코인 시세 데이터를 조회합니다.")
     @GetMapping("/week")
-    public ResponseEntity<?> getWeekPrices() {
+    public ResponseEntity<List<BitcoinPrice>> getWeekPrices() {
         return ResponseEntity.ok(bitcoinPriceService.getWeekPrices());
     }
 
-    /**
-     * Get latest bitcoin price
-     * GET /api/v1/bitcoin/prices/latest
-     */
+    @Operation(summary = "최신 비트코인 시세 조회", description = "가장 최근의 비트코인 시세 데이터 1건을 조회합니다.")
     @GetMapping("/latest")
-    public ResponseEntity<?> getLatestPrice() {
+    public ResponseEntity<BitcoinPrice> getLatestPrice() {
         return ResponseEntity.ok(bitcoinPriceService.getLatestPrice());
     }
 }
