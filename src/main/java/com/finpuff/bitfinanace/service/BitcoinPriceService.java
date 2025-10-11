@@ -76,7 +76,6 @@ public class BitcoinPriceService {
      * Get latest bitcoin price
      */
     public BitcoinPrice getLatestPrice() {
-        List<BitcoinPrice> prices = bitcoinPriceRepository.findLatestPrices();
-        return prices.isEmpty() ? null : prices.getFirst();
+        return bitcoinPriceRepository.findTopByOrderByTimestampDesc();
     }
 }

@@ -2,7 +2,6 @@ package com.finpuff.bitfinanace.repository;
 
 import com.finpuff.bitfinanace.domain.BitcoinPrice;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -21,14 +20,7 @@ public interface BitcoinPriceRepository extends MongoRepository<BitcoinPrice, St
     List<BitcoinPrice> findByTimestampBetweenOrderByTimestampAsc(Instant start, Instant end);
 
     /**
-     * Find latest N prices
+     * Find the most recent price (DB level optimization)
      */
-    @Query(value = "{}", sort = "{ 'timestamp': -1 }")
-    List<BitcoinPrice> findLatestPrices();
-
-    /**
-     * Find prices by symbol and time range
-     */
-    @Query("{ 'metadata.symbol': ?0, 'timestamp': { $gte: ?1, $lte: ?2 } }")
-    List<BitcoinPrice> findBySymbolAndTimeRange(String symbol, Instant start, Instant end);
+    BitcoinPrice findTopByOrderByTimestampDesc();
 }
